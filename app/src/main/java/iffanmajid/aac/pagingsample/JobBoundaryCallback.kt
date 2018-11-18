@@ -39,7 +39,6 @@ class JobBoundaryCallback(private val db: JobDb)
                         //4
                         executor.execute {
                             db.jobDao().insert(response.body()?: listOf())
-                            jobSize = db.jobDao().allJobs().size
                             callback.recordSuccess()
                         }
                     }
@@ -54,7 +53,6 @@ class JobBoundaryCallback(private val db: JobDb)
         helper.runIfNotRunning(PagingRequestHelper.RequestType.AFTER) {callback ->
             executor.execute {
                 jobSize = db.jobDao().allJobs().size
-                Log.e("JobBoundaryCallback", "job size: ${jobSize}")
                 api.getJobs(from = jobSize)
                     .enqueue(object : Callback<List<Job>> {
                         override fun onFailure(call: Call<List<Job>>, t: Throwable) {
